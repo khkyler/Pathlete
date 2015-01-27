@@ -6,17 +6,18 @@ module.exports = {
     var err = '';
     db.child('users').child(profile.id).once('value', function (data) {
       if (data.val() === null){
-        err = 'user not in DB!';
+        var user = {};
+        //user.id = profile.id;
+        user.tokenSecret = tokenSecret;
+        user.token = token;
+        user.name = profile._json.user.fullName;
+        user.strideRunning = profile._json.user.strideLengthRunning;
+        user.strideWalking = profile._json.user.strideLengthWalking;
+        user.units = profile._json.user.distanceUnit;
+        db.child('users').child(profile.id).set(user);
+      } else {
+        db.child('users').child(profile.id).update({tokenSecret: tokenSecret, token: token});
       }
-      var user = {};
-      user.id = profile.id;
-      user.tokenSecret = tokenSecret;
-      user.token = token;
-      user.name = profile._json.user.fullName;
-      user.strideRunning = profile._json.user.strideLengthRunning;
-      user.strideWalking = profile._json.user.strideLengthWalking;
-      user.units = profile._json.user.distanceUnit;
-      db.child('users').push(user);
       done(err, profile._json.user);
     });
   },
